@@ -36,3 +36,32 @@ def create_category(category: CategoryCreate, db: Session = Depends(get_db)):
     db.refresh(db_category)
     return db_category
 
+@router.put("/{category_id}", response_model=CategoryResponse)
+def update_category(category_id: int, category: CategoryUpdate, db: Session = Depends(get_db)):
+    db_category = db.query(model.Category).filter(model.Category.id == category_id).first()
+    if not db_category:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
+        
+    if category.name is not None and category.name != db_category.name:
+        existing_category = db.query(model.Category).filter(model.Category.name == category.name).first()
+        if existing_category:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Category already exists")
+    
+    if category.description is not None and category.description != "string":
+        db_category.description = category.description
+
+    if category.name is not None:
+        db_category.name = category.name
+
+    db.commit()
+    db.refresh(db_category)
+    return db_category
+
+@router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_category(category_id: int, db: Session = Depends(get_db)):
+    db_category = db.query(model.Category).filter(model.Category.id == category_id).first()
+    if not db_category:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
+    db.delete(db_category)
+    db.commit()
+    return {"message": "Category deleted successfully"} 

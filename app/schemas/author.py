@@ -1,7 +1,21 @@
-from fastapi import APIRouter
+from pydantic import BaseModel
 
-router = APIRouter()
- 
-@router.get("/authors")
-def list_authors():
-    return {"message": "Authors"} 
+class AuthorBase(BaseModel):
+    name: str
+    bio: str | None = None
+
+class AuthorCreate(AuthorBase):
+    pass
+
+class AuthorUpdate(AuthorBase):
+    name: str | None = None
+    bio: str | None = None
+
+class AuthorInDB(AuthorBase):
+    id: int
+
+    class Config:
+        orm_mode = True
+
+class AuthorResponse(AuthorInDB):
+    pass

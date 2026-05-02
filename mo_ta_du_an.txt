@@ -1,0 +1,65 @@
+================================================================================
+  MÔ TẢ DỰ ÁN – BOOK MANAGEMENT API (Python FastAPI)
+================================================================================
+
+Mục đích
+--------
+Ứng dụng backend REST API phục vụ quản lý thư viện sách đơn giản: quản lý tác giả,
+thể loại và sách, có quan hệ khóa ngoại giữa sách với tác giả và thể loại.
+
+
+Công nghệ sử dụng
+-----------------
+- Ngôn ngữ: Python 3.10 trở lên (khuyến nghị 3.11+)
+- Framework web: FastAPI
+- ORM / database: SQLAlchemy 2.x
+- Cơ sở dữ liệu mặc định: SQLite (file book.db trong thư mục project)
+- Migration schema: Alembic (cấu hình trong alembic.ini, script trong thư mục migration/)
+- Xác thực / kiểu dữ liệu request-response: Pydantic v2
+
+
+Chức năng API (tóm tắt)
+-----------------------
+- /authors      — CRUD tác giả (tên, tiểu sử, …)
+- /categories   — CRUD thể loại
+- /books        — CRUD sách; danh sách sách có thể lọc theo author_id, category_id,
+                  năm xuất bản (year), và từ khóa (keyword) tìm trong tiêu đề và mô tả
+
+Phản hồi chi tiết sách (BookResponse) trả về kèm thông tin lồng ghép về tác giả và
+thể loại khi xem danh sách, chi tiết, tạo mới hoặc cập nhật.
+
+
+Cấu trúc mã nguồn (rút gọn)
+---------------------------
+app/
+  main.py           — Khởi tạo FastAPI, gắn các router theo prefix
+  api/endpoints/    — author.py, category.py, book.py (định nghĩa route)
+  api/deps.py       — Phụ thuộc dùng chung (ví dụ get_db)
+  core/config.py    — Cấu hình (SQLALCHEMY_DATABASE_URL, …)
+  db/               — Engine, session, Base cho SQLAlchemy
+  model/            — Model Author, Category, Book và quan hệ
+  schemas/          — Schema Pydantic tương ứng
+
+migration/          — Các phiên bản migration Alembic
+requirements.txt    — Thư viện Python cần cài
+README.md           — Hướng dẫn cài đặt và chạy chi tiết
+
+
+Cách chạy nhanh (tham khảo README.md)
+-------------------------------------
+1. Tạo virtualenv, cài: pip install -r requirements.txt
+2. Áp migration: alembic -c alembic.ini upgrade head
+3. Chạy server: uvicorn app.main:app --reload
+4. Tài liệu tương tác: http://127.0.0.1:8000/docs
+
+
+Ghi chú
+-------
+- File book.db thường không đưa lên Git (nằm trong .gitignore); mỗi môi trường có thể
+  tạo DB riêng sau khi chạy migration.
+- Dự án mang tính học tập / mẫu; có thể mở rộng thêm xác thực người dùng, upload ảnh
+  bìa, phân trang nâng cao, v.v.
+
+================================================================================
+  Cập nhật: mô tả tổng quan theo trạng thái dự án tại thời điểm tạo file này.
+================================================================================
